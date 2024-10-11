@@ -23,8 +23,8 @@ class HomeViewModel @Inject constructor(
     private val _showMessage: MutableStateFlow<String?> = MutableStateFlow("")
     private val _userNotes: MutableStateFlow<ArrayList<Notes>> = MutableStateFlow(arrayListOf())
 
-    val uiState: StateFlow<HomeState> = combine(_showMessage,_userNotes){ _showMessage, _userNotes ->
-        HomeState(notes = _userNotes, showUserMessage = _showMessage?:"")
+    val uiState: StateFlow<HomeState> = combine(_showMessage,_userNotes){ showMessage, userNotes ->
+        HomeState(notes = userNotes, showUserMessage = showMessage?:"")
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState())
 
     init {

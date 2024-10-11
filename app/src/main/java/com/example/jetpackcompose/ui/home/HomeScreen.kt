@@ -37,17 +37,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.jetpackcompose.ui.home.model.Notes
 import com.example.jetpackcompose.utils.HomeAppBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    vm: HomeViewModel = hiltViewModel(),
+    viewmodel: HomeViewModel = hiltViewModel(),
     snackbarHostState:SnackbarHostState = remember { SnackbarHostState() }
 ) {
 
-    val uiState : HomeState by vm.uiState.collectAsStateWithLifecycle()
+    val uiState : HomeState by viewmodel.uiState.collectAsStateWithLifecycle()
     val onAction: (HomeAction) -> Unit = { action ->
-        vm.handle(action)
+        viewmodel.handle(action)
     }
     val scope = rememberCoroutineScope()
 
@@ -63,6 +62,7 @@ fun HomeScreen(
         modifier = modifier, snackbarHost = {SnackbarHost(snackbarHostState)}
     ) { paddingValues ->
 
+        //Screen Content
         Box(
             modifier = Modifier
                 .padding(paddingValues)
@@ -81,9 +81,11 @@ fun HomeScreen(
     }
 
     uiState.showUserMessage?.let { message ->
-        LaunchedEffect(snackbarHostState, vm, message, message) {
-            snackbarHostState.showSnackbar(message)
-            vm.snackBarMessageShown()
+        if(message.isNotEmpty()){
+            LaunchedEffect(snackbarHostState, viewmodel, message, message) {
+                snackbarHostState.showSnackbar(message)
+                viewmodel.snackBarMessageShown()
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ data class HomeState(
     val errorMessage: String? = null,
     val isRefreshing: Boolean = false,
     val searchQuery: String = "",
-    val showUserMessage: String = ""
+    val showUserMessage: String? = ""
 )
 
 /**
