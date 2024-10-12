@@ -22,7 +22,6 @@ data class HomeState(
 
 sealed class HomeAction {
     data class ShowUserMessage(val message: String) : HomeAction()
-    data object AddNote : HomeAction()
     data object Search : HomeAction()
     data object Info : HomeAction()
 }

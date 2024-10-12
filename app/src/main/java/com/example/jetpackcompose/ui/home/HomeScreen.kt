@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,7 +56,8 @@ import com.example.jetpackcompose.utils.Utils
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewmodel: HomeViewModel = hiltViewModel(),
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onAddTask: () -> Unit = {},
 ) {
 
     val uiState: HomeState by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -70,7 +72,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Handle the click event */ },
+                onClick = { onAddTask.invoke() },
                 modifier = Modifier
                     .padding(16.dp)
                     .border(1.dp, color = btnColors, shape = CircleShape),
@@ -83,7 +85,7 @@ fun HomeScreen(
                     ),
                     contentDescription = "Add",
                     tint = Color.White,
-                    modifier = Modifier.padding(all = 16.dp)
+                    modifier = Modifier.height(30.dp).width(30.dp)
                 )
             }
         },
@@ -163,22 +165,22 @@ fun NotesList(notes: ArrayList<Notes>, onAction: (HomeAction) -> Unit) {
             ) {
                 // Card content here
                 Column(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth() // Padding inside the card
+                    modifier = Modifier.padding(8.dp).fillMaxWidth() // Padding inside the card
                 ) {
                     Text(text = notes[index].title,
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(text = notes[index].description,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.fillMaxWidth(),
-                        maxLines = 3,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(text = notes[index].date,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
@@ -193,7 +195,7 @@ fun NotesList(notes: ArrayList<Notes>, onAction: (HomeAction) -> Unit) {
 
 //@Preview(name = "Large Screen Preview", device = "spec:width=720dp,height=1280dp", showSystemUi = true)
 //@Preview(name = "Small Screen Preview", device = "spec:width=320dp,height=480dp", showSystemUi = true)
-@Preview(showBackground = true, name = "Notes List")
+@Preview(showBackground = true, name = "Notes List", device = Devices.PIXEL_2)
 @Composable
 fun NotesListPreview() {
     val notes = arrayListOf<Notes>()
@@ -218,7 +220,7 @@ fun NotesListPreview() {
                     ),
                     contentDescription = "Add",
                     tint = Color.White,
-                    modifier = Modifier.padding(all = 16.dp)
+                    modifier = Modifier.height(30.dp).width(30.dp)
                 )
             }
         })
@@ -238,7 +240,7 @@ fun NotesListPreview() {
 }
 
 //@Preview(showBackground = true, name = "Empty View", device = Devices.NEXUS_5)
-@Preview(showBackground = true, name = "Empty View")
+@Preview(showBackground = true, name = "Empty View", device = Devices.PIXEL_2)
 @Composable
 fun EmptyNotesPreview() {
     Scaffold(

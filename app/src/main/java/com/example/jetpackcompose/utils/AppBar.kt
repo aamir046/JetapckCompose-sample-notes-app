@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.ui.addnote.AddNoteAction
 import com.example.jetpackcompose.ui.home.HomeAction
 import com.example.jetpackcompose.ui.theme.btnColors
 
@@ -79,7 +80,10 @@ fun HomeAppBar(onAction: (HomeAction) -> Unit){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNoteAppBar(){
+fun AddNoteAppBar(
+    onBack: () -> Unit={},
+    onAction: (AddNoteAction) -> Unit={}
+) {
     TopAppBar(
         title = {},
         navigationIcon = {
@@ -91,7 +95,7 @@ fun AddNoteAppBar(){
                     )
                     .height(40.dp)
                     .width(40.dp),
-                onClick = { /* Handle back navigation */ }
+                onClick = { onBack.invoke() }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_back),
@@ -114,7 +118,7 @@ fun AddNoteAppBar(){
                     .background(color = btnColors, shape = RoundedCornerShape(size = 10.dp))
                     .height(40.dp)
                     .width(40.dp),
-                onClick = { /* Handle back navigation */ }
+                onClick = { onAction(AddNoteAction.ShowUserMessage("Under Development!")) }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_visibility),
@@ -128,7 +132,7 @@ fun AddNoteAppBar(){
                         .background(color = btnColors, shape = RoundedCornerShape(size = 10.dp))
                         .height(40.dp)
                         .width(40.dp),
-                    onClick = { /* Handle back navigation */ }
+                    onClick = { onAction(AddNoteAction.ShowUserMessage("Under Development!")) }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_save),
