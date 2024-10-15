@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.ui.addnote.AddNoteAction
 import com.example.jetpackcompose.ui.home.HomeAction
+import com.example.jetpackcompose.ui.theme.Typography
 import com.example.jetpackcompose.ui.theme.btnColors
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -37,7 +39,7 @@ import com.example.jetpackcompose.ui.theme.btnColors
 @Composable
 fun HomeAppBar(onAction: (HomeAction) -> Unit){
           TopAppBar(
-              title = { Text("Notes", fontSize = 30.sp, fontWeight = FontWeight.SemiBold) },
+              title = { Text(text = "Notes", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
               modifier = Modifier.fillMaxWidth(),
               colors = TopAppBarDefaults.topAppBarColors(
                   containerColor = Color.Black,

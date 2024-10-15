@@ -16,4 +16,5 @@ data class AddNoteState(
 
 sealed class AddNoteAction {
     data class ShowUserMessage(val message: String) : AddNoteAction()
+    data class SaveNote(val title: String, val description: String) : AddNoteAction()
 }

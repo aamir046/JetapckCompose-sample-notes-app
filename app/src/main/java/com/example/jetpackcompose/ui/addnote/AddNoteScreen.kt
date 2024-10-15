@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -17,8 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +53,7 @@ fun AddNoteScreen(
             .padding(paddingValues)
             .background(Color.Black)
         ){
-            AddNoteScreenContent(modifier)
+            AddNoteScreenContent()
         }
     }
 }
@@ -68,7 +69,10 @@ fun AddNoteScreenContent(modifier: Modifier=Modifier){
             onValueChange = {
                 titleState.value = it
             },
-            placeholder = { Text("Title", color = textFieldHintsColor, fontSize = 38.sp, fontWeight = FontWeight.SemiBold) },
+            placeholder = { Text(text = "Title",
+                color = textFieldHintsColor,
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 38.sp),
+                modifier = Modifier.fillMaxWidth()) },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
@@ -77,34 +81,31 @@ fun AddNoteScreenContent(modifier: Modifier=Modifier){
                 cursorColor = Color.White,
                 focusedTextColor = Color.White
             ),
-            textStyle = TextStyle(
-                fontSize = 38.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White
-            ),
-            modifier = Modifier.padding(8.dp).fillMaxWidth()
+            textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 38.sp),
+            modifier = Modifier.fillMaxWidth().padding(all = 0.dp)
         )
 
-        TextField(
+        BasicTextField(
             value = noteBodyState.value,
             onValueChange = {
                 noteBodyState.value = it
             },
-            placeholder = { Text("Type Something...", color = textFieldHintsColor, fontSize = 20.sp, fontWeight = FontWeight.Normal) },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                cursorColor = Color.White,
-                focusedTextColor = Color.White
-            ),
-            textStyle = TextStyle(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.White
-            ),
-            modifier = Modifier.padding(8.dp).fillMaxWidth()
+            textStyle = MaterialTheme.typography.labelLarge.copy(color = Color.White),
+            cursorBrush = SolidColor(Color.White),
+            modifier = Modifier
+                .background(Color.Transparent)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .fillMaxWidth(),
+            decorationBox = { innerTextField ->
+                if (noteBodyState.value.isEmpty()) {
+                    Text(
+                        "Type Something...",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = textFieldHintsColor,
+                    )
+                }
+                innerTextField() // This renders the actual text input
+            }
         )
     }
 
