@@ -7,6 +7,7 @@ import com.example.jetpackcompose.data.source.local.db.NoteDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -16,7 +17,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNoteDatabase(app: Context): NoteDatabase {
+    fun provideNoteDatabase(@ApplicationContext app: Context): NoteDatabase {
         return Room.databaseBuilder(
             app,
             NoteDatabase::class.java,

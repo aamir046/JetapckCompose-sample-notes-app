@@ -9,13 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,37 +38,53 @@ fun AddNoteScreen(
 ){
     val uiState: AddNoteState by viewmodel.uiState.collectAsStateWithLifecycle()
 
-    val onAction: (AddNoteAction) -> Unit = { action ->
-        viewmodel.handle(action)
-    }
-
     Scaffold(
         topBar = {
             AddNoteAppBar(
                 onBack = onback,
-                onAction=onAction
+                onSave = {viewmodel.saveNote(uiState.note)},
+                onVisibility = {viewmodel.showSnackBarMessage("Under Development yet!")}
             )
-        }
+        },
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {paddingValues->
         Box(modifier = modifier
             .padding(paddingValues)
             .background(Color.Black)
         ){
-            AddNoteScreenContent()
+            AddNoteScreenContent(
+                title = uiState.note.title,
+                onUpdateTitle = viewmodel::updateTitle,
+                description = uiState.note.description,
+                onUpdateDescription = viewmodel::updateDescription
+            )
+        }
+    }
+
+    uiState.showUserMessage?.let { message ->
+        if (message.isNotEmpty()) {
+            LaunchedEffect(snackbarHostState, viewmodel, message, message) {
+                snackbarHostState.showSnackbar(message)
+                viewmodel.snackBarMessageShown()
+            }
         }
     }
 }
 
 @Composable
-fun AddNoteScreenContent(modifier: Modifier=Modifier){
+fun AddNoteScreenContent(
+    modifier: Modifier=Modifier,
+    title:String="",
+    onUpdateTitle:(String)->Unit={},
+    description:String="",
+    onUpdateDescription:(String)->Unit={}
+){
     Column(modifier = modifier) {
-        val titleState = remember { mutableStateOf("") }
-        val noteBodyState = remember { mutableStateOf("") }
-
         TextField(
-            value = titleState.value,
+            value = title,
             onValueChange = {
-                titleState.value = it
+                onUpdateTitle(it)
             },
             placeholder = { Text(text = "Title",
                 color = textFieldHintsColor,
@@ -86,9 +103,9 @@ fun AddNoteScreenContent(modifier: Modifier=Modifier){
         )
 
         BasicTextField(
-            value = noteBodyState.value,
+            value = description,
             onValueChange = {
-                noteBodyState.value = it
+                onUpdateDescription(it)
             },
             textStyle = MaterialTheme.typography.labelLarge.copy(color = Color.White),
             cursorBrush = SolidColor(Color.White),
@@ -97,7 +114,7 @@ fun AddNoteScreenContent(modifier: Modifier=Modifier){
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .fillMaxWidth(),
             decorationBox = { innerTextField ->
-                if (noteBodyState.value.isEmpty()) {
+                if (description.isEmpty()) {
                     Text(
                         "Type Something...",
                         style = MaterialTheme.typography.labelLarge,

@@ -48,6 +48,11 @@ android {
         }
     }
 
+    applicationVariants.all {
+        kotlin.sourceSets.getByName(name) {
+            kotlin.srcDir("build/generated/ksp/$name/kotlin")
+        }
+    }
 }
 
 dependencies {
@@ -61,7 +66,7 @@ dependencies {
     // Architecture Components
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-//    ksp(libs.room.compiler)
+    kapt(libs.room.compiler)
 
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)

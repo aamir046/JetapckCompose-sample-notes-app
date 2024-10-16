@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.ui.home.model.Notes
+import com.example.jetpackcompose.data.model.Note
 import com.example.jetpackcompose.ui.theme.btnColors
 import com.example.jetpackcompose.utils.HomeAppBar
 import com.example.jetpackcompose.utils.NotesColor
@@ -57,14 +57,14 @@ fun HomeScreen(
 ) {
 
     val uiState: HomeState by viewmodel.uiState.collectAsStateWithLifecycle()
-    val onAction: (HomeAction) -> Unit = { action ->
-        viewmodel.handle(action)
-    }
     val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
-            HomeAppBar(onAction = onAction)
+            HomeAppBar(
+                onInfo = viewmodel::showInfo,
+                onSearch = viewmodel::showSearch
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -102,7 +102,7 @@ fun HomeScreen(
                 EmptyView()
             } else {
                 // List View of Notes
-                NotesList(uiState.notes, onAction)
+                NotesList(uiState.notes, viewmodel::showSnackBarMessage)
             }
         }
     }
@@ -142,7 +142,10 @@ fun EmptyView() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun NotesList(notes: ArrayList<Notes>, onAction: (HomeAction) -> Unit) {
+fun NotesList(
+    notes: ArrayList<Note>,
+    showUserMessage:(String)->Unit={}
+) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp)
     ) {
@@ -155,7 +158,7 @@ fun NotesList(notes: ArrayList<Notes>, onAction: (HomeAction) -> Unit) {
                 shape = RoundedCornerShape(8.dp), // Rounded corners
                 onClick = {
                     val message = "Note ${notes[index].title} clicked"
-                    onAction(HomeAction.ShowUserMessage(message))
+                    showUserMessage(message)
                 },
                 backgroundColor = Utils.getColor(notes[index].color)
             ) {
@@ -177,7 +180,7 @@ fun NotesList(notes: ArrayList<Notes>, onAction: (HomeAction) -> Unit) {
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = notes[index].date,
+                    Text(text = "${notes[index].date}",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.fillMaxWidth(),
@@ -194,12 +197,12 @@ fun NotesList(notes: ArrayList<Notes>, onAction: (HomeAction) -> Unit) {
 @Preview(showBackground = true, name = "Notes List", device = Devices.PIXEL_2)
 @Composable
 fun NotesListPreview() {
-    val notes = arrayListOf<Notes>()
-    notes.add(Notes("Note 1", description = "Note1 Description here", color = NotesColor.RED, date = "12-9-2024"))
-    notes.add(Notes("Note 1", description = "Note2 Description here", color = NotesColor.PURPLE, date = "12-10-2024"))
-    notes.add(Notes("Note 1", description = "Note3 Description here", color = NotesColor.SKYBLUE,date = "12-11-2024"))
+    val notes = arrayListOf<Note>()
+    notes.add(Note("Note 1", description = "Note1 Description here", color = NotesColor.RED.name))
+    notes.add(Note("Note 1", description = "Note2 Description here", color = NotesColor.PURPLE.name))
+    notes.add(Note("Note 1", description = "Note3 Description here", color = NotesColor.SKYBLUE.name))
     Scaffold(
-        topBar = { HomeAppBar(onAction = {}) },
+        topBar = { HomeAppBar() },
         modifier = Modifier,
         floatingActionButton = {
             FloatingActionButton(
@@ -228,7 +231,7 @@ fun NotesListPreview() {
                 .background(Color.Black) // Ensure the Box takes full screen space
         ) {
             NotesList(
-                notes = notes, onAction = {}
+                notes = notes
             )
         }
     }
@@ -240,7 +243,7 @@ fun NotesListPreview() {
 @Composable
 fun EmptyNotesPreview() {
     Scaffold(
-        topBar = { HomeAppBar(onAction = {}) },
+        topBar = { HomeAppBar() },
         modifier = Modifier.fillMaxSize()
     )
     { paddingValues ->

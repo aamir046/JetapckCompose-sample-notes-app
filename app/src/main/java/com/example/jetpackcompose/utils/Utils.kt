@@ -12,12 +12,12 @@ object Utils {
 
     fun <T> getColor(color:T):Color{
         return when(color){
-            NotesColor.RED -> noteCardColorLightRed
-            NotesColor.GREEN -> noteCardColorGreen
-            NotesColor.YELLOW -> noteCardColorYellow
-            NotesColor.SKYBLUE -> noteCardColorSkyBlue
-            NotesColor.PURPLE -> noteCardColorPurple
-            NotesColor.NAVYLIGHT -> noteCardColorNavyLight
+            NotesColor.RED.name -> noteCardColorLightRed
+            NotesColor.GREEN.name -> noteCardColorGreen
+            NotesColor.YELLOW.name -> noteCardColorYellow
+            NotesColor.SKYBLUE.name -> noteCardColorSkyBlue
+            NotesColor.PURPLE.name -> noteCardColorPurple
+            NotesColor.NAVYLIGHT.name -> noteCardColorNavyLight
             else -> noteCardColorLightRed
         }
     }

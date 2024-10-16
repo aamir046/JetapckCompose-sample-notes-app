@@ -3,7 +3,7 @@ package com.example.jetpackcompose.ui.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetpackcompose.ui.home.model.Notes
+import com.example.jetpackcompose.data.model.Note
 import com.example.jetpackcompose.utils.NotesColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,49 +14,52 @@ import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * UI State that represents HomeScreen
+ **/
+data class HomeState(
+    val notes: ArrayList<Note> = arrayListOf(),
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val isRefreshing: Boolean = false,
+    val searchQuery: String = "",
+    val showUserMessage: String? = ""
+)
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     // UI state exposed to the UI
     private val _showMessage: MutableStateFlow<String?> = MutableStateFlow("")
-    private val _userNotes: MutableStateFlow<ArrayList<Notes>> = MutableStateFlow(arrayListOf())
+    private val _userNotes: MutableStateFlow<ArrayList<Note>> = MutableStateFlow(arrayListOf())
 
     val uiState: StateFlow<HomeState> = combine(_showMessage,_userNotes){ showMessage, userNotes ->
         HomeState(notes = userNotes, showUserMessage = showMessage?:"")
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState())
+
+    private val _uistate = MutableStateFlow(HomeState())
 
     init {
         addNotes()
     }
 
     private fun addNotes() {
-        val notes = arrayListOf<Notes>()
-        notes.add(Notes("Note 1", description = "Note1 Description here", color = NotesColor.RED, date = "12-9-2024"))
-        notes.add(Notes("Note 2", description = "Note2 Description here", color = NotesColor.PURPLE, date = "12-10-2024"))
-        notes.add(Notes("Note 3", description = "Note3 Description here", color = NotesColor.SKYBLUE,date = "12-11-2024"))
+        val notes = arrayListOf<Note>()
+        notes.add(Note("Note 1", description = "Note1 Description here", color = NotesColor.RED.name))
+        notes.add(Note("Note 2", description = "Note2 Description here", color = NotesColor.PURPLE.name))
+        notes.add(Note("Note 3", description = "Note3 Description here", color = NotesColor.SKYBLUE.name))
         _userNotes.value = notes
     }
 
-    fun handle(action: HomeAction) {
-        when (action) {
+    fun showInfo(){
+        showSnackBarMessage("INFO: ")
+        Timber.tag("ClickAction").e("INFO: ")
+    }
 
-            is HomeAction.ShowUserMessage -> {
-                showSnackBarMessage(action.message)
-            }
-
-            HomeAction.Info -> {
-                showSnackBarMessage("INFO: ")
-                Timber.tag("ClickAction").e("INFO: ")
-            }
-            HomeAction.Search -> {
-                showSnackBarMessage("SEARCH: ")
-                Timber.tag("ClickAction").e("SEARCH: ")
-            }
-            else -> {
-                Timber.tag("Action").e("ELSE: ")
-            }
-        }
+    fun showSearch(){
+        showSnackBarMessage("SEARCH: ")
+        Timber.tag("ClickAction").e("SEARCH: ")
     }
 
     fun snackBarMessageShown() {
@@ -65,6 +68,7 @@ class HomeViewModel @Inject constructor(
 
     fun showSnackBarMessage(message: String) {
         _showMessage.value = message
+        uiState
     }
 
 }

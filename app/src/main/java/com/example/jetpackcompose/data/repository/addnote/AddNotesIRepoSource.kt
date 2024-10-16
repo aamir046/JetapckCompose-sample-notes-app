@@ -1,10 +1,9 @@
 package com.example.jetpackcompose.data.repository.addnote
 
-import com.example.jetpackcompose.data.source.local.entity.Note
-import kotlinx.coroutines.flow.Flow
+import com.example.jetpackcompose.data.source.local.entity.NoteEntity
 
 interface AddNotesIRepoSource {
-    suspend fun insertNote(note: Note)
-    suspend fun updateNote(note: Note)
-    suspend fun getNoteById(id: Int): Note?
+    suspend fun insertNote(noteEntity: NoteEntity)
+    suspend fun updateNote(noteEntity: NoteEntity)
+    suspend fun getNoteById(id: Int): NoteEntity?
 }

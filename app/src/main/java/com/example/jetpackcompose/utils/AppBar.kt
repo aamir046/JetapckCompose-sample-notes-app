@@ -27,17 +27,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.ui.addnote.AddNoteAction
-import com.example.jetpackcompose.ui.home.HomeAction
-import com.example.jetpackcompose.ui.theme.Typography
 import com.example.jetpackcompose.ui.theme.btnColors
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeAppBar(onAction: (HomeAction) -> Unit){
+fun HomeAppBar(
+    onInfo: () -> Unit = {},
+    onSearch: () -> Unit = {},
+){
           TopAppBar(
               title = { Text(text = "Notes", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
               modifier = Modifier.fillMaxWidth(),
@@ -53,7 +52,7 @@ fun HomeAppBar(onAction: (HomeAction) -> Unit){
                           .background(color = btnColors, shape = RoundedCornerShape(size = 10.dp))
                           .height(40.dp)
                           .width(40.dp),
-                      onClick = { onAction(HomeAction.Search) }
+                      onClick = { onSearch.invoke() }
                   ) {
                       Icon(
                           Icons.Default.Search,
@@ -68,7 +67,7 @@ fun HomeAppBar(onAction: (HomeAction) -> Unit){
                           .background(color = btnColors, shape = RoundedCornerShape(size = 10.dp))
                           .height(40.dp)
                           .width(40.dp),
-                      onClick = { onAction(HomeAction.Info) }
+                      onClick = { onInfo.invoke() }
                   ) {
                       Icon(
                           painter = painterResource(id = R.drawable.ic_info),
@@ -84,7 +83,8 @@ fun HomeAppBar(onAction: (HomeAction) -> Unit){
 @Composable
 fun AddNoteAppBar(
     onBack: () -> Unit={},
-    onAction: (AddNoteAction) -> Unit={}
+    onSave: () -> Unit={},
+    onVisibility:()->Unit={}
 ) {
     TopAppBar(
         title = {},
@@ -120,11 +120,11 @@ fun AddNoteAppBar(
                     .background(color = btnColors, shape = RoundedCornerShape(size = 10.dp))
                     .height(40.dp)
                     .width(40.dp),
-                onClick = { onAction(AddNoteAction.ShowUserMessage("Under Development!")) }
+                onClick = { onVisibility.invoke() }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_visibility),
-                    contentDescription = "Back",
+                    contentDescription = "show hide typing options",
                     tint = Color.White
                 )
             }
@@ -134,11 +134,11 @@ fun AddNoteAppBar(
                         .background(color = btnColors, shape = RoundedCornerShape(size = 10.dp))
                         .height(40.dp)
                         .width(40.dp),
-                    onClick = { onAction(AddNoteAction.ShowUserMessage("Under Development!")) }
+                    onClick = { onSave.invoke() }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_save),
-                        contentDescription = "Back",
+                        contentDescription = "Save Note",
                         tint = Color.White
                     )
                 }
@@ -161,6 +161,6 @@ fun PreviewAddNoteAppBar(){
 fun HomeAppBarPreview(){
     Scaffold(){paddingvalues->
         Box(modifier = Modifier.padding(paddingvalues))
-        HomeAppBar(onAction = {})
+        HomeAppBar()
     }
 }
