@@ -7,6 +7,9 @@ import com.example.jetpackcompose.ui.theme.noteCardColorNavyLight
 import com.example.jetpackcompose.ui.theme.noteCardColorPurple
 import com.example.jetpackcompose.ui.theme.noteCardColorSkyBlue
 import com.example.jetpackcompose.ui.theme.noteCardColorYellow
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object Utils {
 
@@ -20,5 +23,11 @@ object Utils {
             NotesColor.NAVYLIGHT.name -> noteCardColorNavyLight
             else -> noteCardColorLightRed
         }
+    }
+
+    fun getCurrentDateTime():String{
+        val currentDateTime = Date()
+        val formatter = SimpleDateFormat("MM-dd-yyyy : HH:mm", Locale.getDefault())
+        return formatter.format(currentDateTime)
     }
 }

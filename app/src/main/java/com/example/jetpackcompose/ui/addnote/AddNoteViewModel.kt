@@ -1,11 +1,13 @@
 package com.example.jetpackcompose.ui.addnote
 
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.data.model.Note
 import com.example.jetpackcompose.data.repository.addnote.AddNotesIRepoSource
 import com.example.jetpackcompose.data.source.local.entity.NoteEntity
+import com.example.jetpackcompose.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,7 +25,8 @@ data class AddNoteState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val showUserMessage: String? = "",
-    val note: Note = Note()
+    val note: Note = Note(),
+    val showColorPicker:Boolean = false
 )
 
 @HiltViewModel
@@ -35,13 +38,15 @@ class AddNoteViewModel @Inject constructor(
     private val _showMessage: MutableStateFlow<String?> = MutableStateFlow("")
     private val _errorMessage: MutableStateFlow<String?> = MutableStateFlow("")
     private val _note: MutableStateFlow< Note?> = MutableStateFlow(Note())
+    private val _showColorPicker: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val uiState: StateFlow<AddNoteState> =
-        combine(_note, _showMessage, _errorMessage) { note, showMessage, errorMessage ->
+        combine(_note, _showMessage, _errorMessage,_showColorPicker) { note, showMessage, errorMessage,showColorPicker ->
             AddNoteState(
                 note = note ?: Note(),
                 showUserMessage = showMessage ?: "",
-                errorMessage = errorMessage ?: ""
+                errorMessage = errorMessage ?: "",
+                showColorPicker = showColorPicker
             )
         }.stateIn(viewModelScope, SharingStarted.Eagerly, AddNoteState())
 
@@ -52,7 +57,7 @@ class AddNoteViewModel @Inject constructor(
                     title = note.title,
                     description = note.description,
                     color = note.color,
-                    date = note.date
+                    date = Utils.getCurrentDateTime()
                 )
             )
             showSnackBarMessage("Note Saved Successfully!")
@@ -77,5 +82,15 @@ class AddNoteViewModel @Inject constructor(
 
     fun showSnackBarMessage(message: String) {
         _showMessage.value = message
+    }
+
+    fun showColorPicker(isShowPicker:Boolean){
+        _showColorPicker.value = isShowPicker
+    }
+
+    fun updateNoteColor(color:String){
+        _note.update {
+            it?.copy(color = color)
+        }
     }
 }

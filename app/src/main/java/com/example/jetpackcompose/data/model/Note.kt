@@ -5,6 +5,6 @@ import com.example.jetpackcompose.utils.NotesColor
 data class Note (
     val title :String = "",
     val description :String = "",
-    val date :String = "1-1-1002",
+    val date :String = "",
     val color:String = NotesColor.RED.name
 )

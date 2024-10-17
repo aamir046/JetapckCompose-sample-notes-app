@@ -21,11 +21,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.jetpackcompose.ui.addnote.components.ColorSelectionDialog
 import com.example.jetpackcompose.ui.theme.textFieldHintsColor
 import com.example.jetpackcompose.utils.AddNoteAppBar
 
@@ -35,15 +37,17 @@ fun AddNoteScreen(
     onback: () -> Unit = {},
     viewmodel: AddNoteViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+
 ){
     val uiState: AddNoteState by viewmodel.uiState.collectAsStateWithLifecycle()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
             AddNoteAppBar(
                 onBack = onback,
-                onSave = {viewmodel.saveNote(uiState.note)},
-                onVisibility = {viewmodel.showSnackBarMessage("Under Development yet!")}
+                onSave = {viewmodel.saveNote(uiState.note);keyboardController?.hide()},
+                onVisibility = {viewmodel.showColorPicker(true)}
             )
         },
         modifier = modifier,
@@ -68,6 +72,16 @@ fun AddNoteScreen(
                 snackbarHostState.showSnackbar(message)
                 viewmodel.snackBarMessageShown()
             }
+        }
+    }
+
+    uiState.showColorPicker.let { isShowPicker ->
+        if (isShowPicker) {
+                ColorSelectionDialog(
+                    onColorSelected = viewmodel::updateNoteColor,
+                    onDismiss = {viewmodel.showColorPicker(false)},
+                    selectedColor = uiState.note.color
+                )
         }
     }
 }
@@ -98,7 +112,7 @@ fun AddNoteScreenContent(
                 cursorColor = Color.White,
                 focusedTextColor = Color.White
             ),
-            textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 38.sp),
+            textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 38.sp, color = Color.White),
             modifier = Modifier.fillMaxWidth().padding(all = 0.dp)
         )
 
