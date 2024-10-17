@@ -21,11 +21,14 @@ import javax.inject.Inject
  **/
 data class HomeState(
     val notes: ArrayList<Note> = arrayListOf(),
+    val filteredNotes: ArrayList<Note> = arrayListOf(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isRefreshing: Boolean = false,
     val searchQuery: String = "",
-    val showUserMessage: String? = ""
+    val showUserMessage: String? = "",
+    val showInfo: Boolean = false,
+    val showSearch: Boolean = false
 )
 
 @HiltViewModel
@@ -36,9 +39,12 @@ class HomeViewModel @Inject constructor(
     // UI state exposed to the UI
     private val _showMessage: MutableStateFlow<String?> = MutableStateFlow("")
     private val _userNotes: MutableStateFlow<ArrayList<Note>> = MutableStateFlow(arrayListOf())
+    private val _filteredNotes: MutableStateFlow<ArrayList<Note>> = MutableStateFlow(arrayListOf())
+    private val _showInfo: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _showSearch: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    val uiState: StateFlow<HomeState> = combine(_showMessage,_userNotes){ showMessage, userNotes ->
-        HomeState(notes = userNotes, showUserMessage = showMessage?:"")
+    val uiState: StateFlow<HomeState> = combine(_showMessage,_userNotes,_showInfo,_showSearch,_filteredNotes,){ showMessage, userNotes, showInfo, showSearch,filteredNotes ->
+        HomeState(notes = userNotes, showUserMessage = showMessage?:"", showInfo = showInfo, showSearch = showSearch, filteredNotes = filteredNotes)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState())
 
     private val _uistate = MutableStateFlow(HomeState())
@@ -71,14 +77,31 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun showInfo(){
-        showSnackBarMessage("INFO: ")
+    fun showInfo(isShowAlert:Boolean){
+        _showInfo.update {
+            isShowAlert
+        }
         Timber.tag("ClickAction").e("INFO: ")
     }
 
-    fun showSearch(){
-        showSnackBarMessage("SEARCH: ")
+    fun showSearch(query:String){
+        val filteredList = uiState.value.notes.filter{note -> note.title.contains(query) }
+        _filteredNotes.update {
+            ArrayList(filteredList)
+        }
+
+        if(query.isEmpty()){
+            _filteredNotes.update {
+                uiState.value.notes
+            }
+        }
         Timber.tag("ClickAction").e("SEARCH: ")
+    }
+
+    fun searchingEnabled(isEnabled:Boolean){
+        _showSearch.update {
+            isEnabled
+        }
     }
 
     fun snackBarMessageShown() {

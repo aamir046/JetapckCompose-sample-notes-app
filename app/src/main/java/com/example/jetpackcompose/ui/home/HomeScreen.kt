@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.data.model.Note
+import com.example.jetpackcompose.ui.home.components.AboutAppDialog
 import com.example.jetpackcompose.ui.theme.btnColors
 import com.example.jetpackcompose.utils.HomeAppBar
 import com.example.jetpackcompose.utils.NotesColor
@@ -63,7 +64,8 @@ fun HomeScreen(
         topBar = {
             HomeAppBar(
                 onInfo = viewmodel::showInfo,
-                onSearch = viewmodel::showSearch
+                onSearchQuery = viewmodel::showSearch,
+                isSearchingEnabled = viewmodel::searchingEnabled
             )
         },
         floatingActionButton = {
@@ -88,7 +90,6 @@ fun HomeScreen(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-
         //Screen Content
         Box(
             modifier = Modifier
@@ -96,13 +97,20 @@ fun HomeScreen(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-
             if (uiState.notes.isEmpty()) {
-                // Empty View
                 EmptyView()
             } else {
-                // List View of Notes
-                NotesList(uiState.notes, viewmodel::showSnackBarMessage)
+                if(uiState.showSearch){
+                    NotesList(
+                        notes=uiState.filteredNotes,
+                        showUserMessage=viewmodel::showSnackBarMessage,
+                    )
+                }else{
+                    NotesList(
+                        notes=uiState.notes,
+                        showUserMessage=viewmodel::showSnackBarMessage,
+                    )
+                }
             }
         }
     }
@@ -114,6 +122,14 @@ fun HomeScreen(
                 viewmodel.snackBarMessageShown()
             }
         }
+    }
+
+    if (uiState.showInfo) {
+        AboutAppDialog(
+            onDismiss = {
+                viewmodel.showInfo(false)
+            }
+        )
     }
 }
 
@@ -144,7 +160,8 @@ fun EmptyView() {
 @Composable
 fun NotesList(
     notes: ArrayList<Note>,
-    showUserMessage:(String)->Unit={}
+    showUserMessage:(String)->Unit={},
+    isSearchingEnabled:Boolean = false
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp)
