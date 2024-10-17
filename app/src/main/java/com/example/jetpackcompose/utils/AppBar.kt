@@ -228,12 +228,75 @@ fun AddNoteAppBar(
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NoteDetailsAppBar(
+    onBack: () -> Unit={},
+    onEdit: () -> Unit={},
+) {
+    TopAppBar(
+        title = {},
+        navigationIcon = {
+            IconButton(
+                modifier = Modifier
+                    .background(
+                        color = btnColors,
+                        shape = RoundedCornerShape(size = 10.dp)
+                    )
+                    .height(40.dp)
+                    .width(40.dp),
+                onClick = { onBack.invoke() }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Black,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
+        ),
+        actions = {
+            Row(modifier = Modifier.padding(end = 10.dp)) {
+                IconButton(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .background(color = btnColors, shape = RoundedCornerShape(size = 10.dp))
+                        .height(40.dp)
+                        .width(40.dp),
+                    onClick = { onEdit.invoke() }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_edit),
+                        contentDescription = "Edit Note",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewAddNoteAppBar(){
     Scaffold(){paddingvalues->
         Box(modifier = Modifier.padding(paddingvalues))
             AddNoteAppBar()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewNoteDetailsAppBar(){
+    Scaffold(){paddingvalues->
+        Box(modifier = Modifier.padding(paddingvalues))
+            NoteDetailsAppBar()
     }
 }
 
