@@ -54,7 +54,6 @@ fun HomeAppBar(
     var isSearching by remember { mutableStateOf(false) }
     isSearchingEnabled(isSearching)
     onSearchQuery(searchQuery)
-
     TopAppBar(
         title = {
             if (isSearching) {
