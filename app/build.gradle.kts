@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     id("dagger.hilt.android.plugin")
     alias(libs.plugins.compose.compiler)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -111,6 +112,9 @@ dependencies {
     testImplementation(libs.androidx.test.espresso.intents)
     testImplementation(libs.google.truth)
     testImplementation(libs.androidx.compose.ui.test.junit)
+
+    //Gson
+    implementation(libs.gson)
 
     // JVM tests - Hilt
     testImplementation(libs.hilt.android.testing)

@@ -6,6 +6,7 @@ import com.example.jetpackcompose.data.model.Note
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 data class NoteDetailsState(
@@ -21,4 +22,9 @@ class NoteDetailsViewmodel @Inject constructor(
     private val _uiState:MutableStateFlow<NoteDetailsState> = MutableStateFlow(NoteDetailsState())
     val uiState = _uiState.asStateFlow()
 
+    fun updateNote(note: Note){
+        _uiState.update {
+            it.copy(note = note)
+        }
+    }
 }

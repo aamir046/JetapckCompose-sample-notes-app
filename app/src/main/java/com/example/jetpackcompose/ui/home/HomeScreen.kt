@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,10 +54,9 @@ fun HomeScreen(
     viewmodel: HomeViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onAddTask: () -> Unit = {},
+    onNoteClick: (Note) -> Unit = {}
 ) {
-
     val uiState: HomeState by viewmodel.uiState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -102,13 +100,12 @@ fun HomeScreen(
             } else {
                 if(uiState.showSearch){
                     NotesList(
-                        notes=uiState.filteredNotes,
-                        showUserMessage=viewmodel::showSnackBarMessage,
+                        notes=uiState.filteredNotes
                     )
                 }else{
                     NotesList(
                         notes=uiState.notes,
-                        showUserMessage=viewmodel::showSnackBarMessage,
+                        onNoteClick = onNoteClick
                     )
                 }
             }
@@ -160,8 +157,8 @@ fun EmptyView() {
 @Composable
 fun NotesList(
     notes: ArrayList<Note>,
-    showUserMessage:(String)->Unit={},
-    isSearchingEnabled:Boolean = false
+    isSearchingEnabled:Boolean = false,
+    onNoteClick:(Note)->Unit = {}
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp)
@@ -174,8 +171,7 @@ fun NotesList(
                 elevation = 4.dp, // Shadow effect
                 shape = RoundedCornerShape(8.dp), // Rounded corners
                 onClick = {
-                    val message = "Note ${notes[index].title} clicked"
-                    showUserMessage(message)
+                    onNoteClick.invoke(notes[index])
                 },
                 backgroundColor = Utils.getColor(notes[index].color)
             ) {
@@ -197,7 +193,7 @@ fun NotesList(
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "${notes[index].date}",
+                    Text(text = notes[index].date,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.fillMaxWidth(),
@@ -215,9 +211,9 @@ fun NotesList(
 @Composable
 fun NotesListPreview() {
     val notes = arrayListOf<Note>()
-    notes.add(Note("Note 1", description = "Note1 Description here", color = NotesColor.RED.name))
-    notes.add(Note("Note 1", description = "Note2 Description here", color = NotesColor.PURPLE.name))
-    notes.add(Note("Note 1", description = "Note3 Description here", color = NotesColor.SKYBLUE.name))
+    notes.add(Note(title = "Note 1", description = "Note1 Description here", color = NotesColor.RED.name))
+    notes.add(Note(title = "Note 1", description = "Note2 Description here", color = NotesColor.PURPLE.name))
+    notes.add(Note(title = "Note 1", description = "Note3 Description here", color = NotesColor.SKYBLUE.name))
     Scaffold(
         topBar = { HomeAppBar() },
         modifier = Modifier,

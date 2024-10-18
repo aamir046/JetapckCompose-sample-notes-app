@@ -27,9 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.jetpackcompose.data.model.Note
 import com.example.jetpackcompose.ui.addnote.components.ColorSelectionDialog
 import com.example.jetpackcompose.ui.theme.textFieldHintsColor
 import com.example.jetpackcompose.utils.AddNoteAppBar
+import timber.log.Timber
 
 @Composable
 fun AddNoteScreen(
@@ -37,6 +39,7 @@ fun AddNoteScreen(
     onback: () -> Unit = {},
     viewmodel: AddNoteViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    userNoteArg: Note?=null,
 
 ){
     val uiState: AddNoteState by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -84,6 +87,12 @@ fun AddNoteScreen(
                 )
         }
     }
+
+    userNoteArg?.let {
+        LaunchedEffect(Unit){
+            viewmodel.updateNote(it)
+        }
+    }?: Timber.e(message = "No Note Received")
 }
 
 @Composable

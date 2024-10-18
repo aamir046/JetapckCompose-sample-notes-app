@@ -65,6 +65,7 @@ class HomeViewModel @Inject constructor(
                 _userNotes.value = ArrayList(
                     notes.map { noteEntity ->
                         Note(
+                            id = noteEntity.id,
                             title = noteEntity.title,
                             description = noteEntity.description,
                             color = noteEntity.color,

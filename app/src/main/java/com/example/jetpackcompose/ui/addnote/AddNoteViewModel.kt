@@ -93,4 +93,10 @@ class AddNoteViewModel @Inject constructor(
             it?.copy(color = color)
         }
     }
+
+    fun updateNote(note: Note){
+        _note.update {
+            note
+        }
+    }
 }

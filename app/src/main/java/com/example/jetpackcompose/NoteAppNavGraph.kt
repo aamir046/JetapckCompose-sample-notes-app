@@ -1,5 +1,6 @@
 package com.example.jetpackcompose
 
+import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -16,9 +17,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.jetpackcompose.NotesAppArgs.USER_MESSAGE_ARG
+import com.example.jetpackcompose.NotesAppArgs.USER_NOTE_ARG
+import com.example.jetpackcompose.data.model.Note
 import com.example.jetpackcompose.ui.addnote.AddNoteScreen
 import com.example.jetpackcompose.ui.home.HomeScreen
+import com.example.jetpackcompose.ui.notedetails.NoteDetailsScreen
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun NoteAppNavGraph(
@@ -44,17 +50,46 @@ fun NoteAppNavGraph(
             arguments = listOf(
                 navArgument(USER_MESSAGE_ARG) { type = NavType.IntType; defaultValue = 0 }
             )
-        ) { entry ->
+        ) { backStackEntry ->
             HomeScreen(
-                onAddTask = {navActions.navigateToAddEditTask()}
+                onAddTask = {navActions.navigateToAddEditNote()},
+                onNoteClick = {note-> navActions.navigateToNoteDetails(note)}
             )
         }
+
         composable(
-            NotesAppDestinations.ADD_TASK_ROUTE
-        ) { entry ->
+            NotesAppDestinations.ADD_NOTE_ROUTE,
+            arguments = listOf(
+                navArgument(USER_NOTE_ARG) {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            var note:Note?=null
+            val json = backStackEntry.arguments?.getString(USER_NOTE_ARG)
+            json?.let {
+                note = Gson().fromJson(json, Note::class.java)
+            }
            AddNoteScreen(
-               onback = { navController.popBackStack() }
+               onback = { navController.popBackStack() },
+               userNoteArg = note
            )
+        }
+        composable(
+            NotesAppDestinations.NOTE_DETAILS_ROUTE,
+            arguments = listOf(
+                navArgument(USER_NOTE_ARG) { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val json = backStackEntry.arguments?.getString(USER_NOTE_ARG)
+            val note = Gson().fromJson(json, Note::class.java)
+
+            NoteDetailsScreen(
+                onBack = { navController.popBackStack() },
+                onEdit = {note-> navActions.navigateToAddEditNote(note)},
+                userNoteArg = note
+            )
         }
     }
 }
