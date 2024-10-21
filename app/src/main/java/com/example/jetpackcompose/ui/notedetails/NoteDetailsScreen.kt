@@ -71,14 +71,14 @@ fun AddNoteDetailsScreenContent(
 ){
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         Text(text = title,
-            color = textFieldHintsColor,
+            color = Color.White,
             style = MaterialTheme.typography.titleLarge.copy(fontSize = 38.sp),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 16.dp))
 
         Text(
             text = description,
             style = MaterialTheme.typography.labelLarge,
-            color = textFieldHintsColor,
+            color = Color.White,
             modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth()
         )
 

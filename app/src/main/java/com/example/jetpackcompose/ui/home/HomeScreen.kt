@@ -157,11 +157,10 @@ fun EmptyView() {
 @Composable
 fun NotesList(
     notes: ArrayList<Note>,
-    isSearchingEnabled:Boolean = false,
     onNoteClick:(Note)->Unit = {}
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(8.dp)
     ) {
         items(notes.size) { index ->
             Card(

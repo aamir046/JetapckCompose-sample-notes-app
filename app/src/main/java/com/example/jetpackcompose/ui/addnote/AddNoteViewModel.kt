@@ -39,6 +39,7 @@ class AddNoteViewModel @Inject constructor(
     private val _errorMessage: MutableStateFlow<String?> = MutableStateFlow("")
     private val _note: MutableStateFlow< Note?> = MutableStateFlow(Note())
     private val _showColorPicker: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private var _isEditingNote: Boolean = false
 
     val uiState: StateFlow<AddNoteState> =
         combine(_note, _showMessage, _errorMessage,_showColorPicker) { note, showMessage, errorMessage,showColorPicker ->
@@ -52,15 +53,29 @@ class AddNoteViewModel @Inject constructor(
 
     fun saveNote(note: Note) {
         viewModelScope.launch {
-            addNotesIRepoSource.insertNote(
-                noteEntity = NoteEntity(
-                    title = note.title,
-                    description = note.description,
-                    color = note.color,
-                    date = Utils.getCurrentDateTime()
+            if(!_isEditingNote) {
+                addNotesIRepoSource.insertNote(
+                    noteEntity = NoteEntity(
+                        title = note.title,
+                        description = note.description,
+                        color = note.color,
+                        date = Utils.getCurrentDateTime()
+                    )
                 )
-            )
-            showSnackBarMessage("Note Saved Successfully!")
+                showSnackBarMessage("Note Saved Successfully!")
+                setEditingNote(true) //To avoid adding same name multiple times, once added
+            }else{
+                addNotesIRepoSource.updateNote(
+                    noteEntity = NoteEntity(
+                        id = note.id,
+                        title = note.title,
+                        description = note.description,
+                        color = note.color,
+                        date = Utils.getCurrentDateTime()
+                    )
+                )
+                showSnackBarMessage("Note Updated Successfully!")
+            }
         }
     }
 
@@ -98,5 +113,9 @@ class AddNoteViewModel @Inject constructor(
         _note.update {
             note
         }
+    }
+
+    fun setEditingNote(isEditing:Boolean){
+        _isEditingNote = isEditing
     }
 }

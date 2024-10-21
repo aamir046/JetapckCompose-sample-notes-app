@@ -1,8 +1,10 @@
 package com.example.jetpackcompose
 
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.NotesAppArgs.USER_MESSAGE_ARG
 import com.example.jetpackcompose.NotesAppArgs.USER_NOTE_ARG
+import com.example.jetpackcompose.NotesAppDestinations.HOME_ROUTE
 import com.example.jetpackcompose.NotesAppDestinations.NOTE_DETAILS_ROUTE
 import com.example.jetpackcompose.NotesAppScreens.ADD_EDIT_NOTE_SCREEN
 import com.example.jetpackcompose.NotesAppScreens.HOME_SCREEN
@@ -54,7 +56,9 @@ class NoteAppNavigation(private val navController: NavHostController) {
                     it
                 }
             }
-        )
+        ){
+            popUpTo(navController.graph.findStartDestination().id)
+        }
     }
 
     fun navigateToNoteDetails(note:Note) {

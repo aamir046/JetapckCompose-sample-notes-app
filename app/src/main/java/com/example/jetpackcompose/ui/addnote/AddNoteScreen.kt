@@ -19,6 +19,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -91,6 +93,7 @@ fun AddNoteScreen(
     userNoteArg?.let {
         LaunchedEffect(Unit){
             viewmodel.updateNote(it)
+            viewmodel.setEditingNote(true)
         }
     }?: Timber.e(message = "No Note Received")
 }
@@ -103,6 +106,11 @@ fun AddNoteScreenContent(
     description:String="",
     onUpdateDescription:(String)->Unit={}
 ){
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Column(modifier = modifier) {
         TextField(
             value = title,
@@ -122,7 +130,7 @@ fun AddNoteScreenContent(
                 focusedTextColor = Color.White
             ),
             textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 38.sp, color = Color.White),
-            modifier = Modifier.fillMaxWidth().padding(all = 0.dp)
+            modifier = Modifier.fillMaxWidth().padding(all = 0.dp).focusRequester(focusRequester)
         )
 
         BasicTextField(
